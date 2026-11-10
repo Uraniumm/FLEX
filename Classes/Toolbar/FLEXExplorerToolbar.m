@@ -12,10 +12,12 @@
 #import "FLEXResources.h"
 #import "FLEXUtility.h"
 
-// Workaround for Xcode < 26, because I don't like Xcode 26 :)
-#if !__has_include(<UIKit/UIGlassEffect.h>)
-@interface UIGlassEffect : UIVisualEffect @end
-@implementation UIGlassEffect @end
+// Use Liquid Glass only when supported by both the SDK and runtime >:)
+#if __has_include(<UIKit/UIGlassEffect.h>)
+#import <UIKit/UIGlassEffect.h>
+#define FLEX_HAS_GLASS_EFFECT 1
+#else
+#define FLEX_HAS_GLASS_EFFECT 0
 #endif
 
 @interface FLEXExplorerToolbar ()
@@ -47,6 +49,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Background
+        #if FLEX_HAS_GLASS_EFFECT
         if (@available(iOS 26, *)) {
             UIGlassEffect *glassEffect = [[UIGlassEffect alloc] init];
             self.backgroundGlassView = [[UIVisualEffectView alloc] initWithEffect:glassEffect];
@@ -54,7 +57,9 @@
             self.backgroundGlassView.layer.cornerRadius = 16;
             [self addSubview:self.backgroundGlassView];
             self.backgroundView = self.backgroundGlassView;
-        } else {
+        } else 
+        #endif 
+        {
             self.backgroundView = [UIView new];
             self.backgroundView.backgroundColor = [FLEXColor secondaryBackgroundColorWithAlpha:0.95];
             [self addSubview:self.backgroundView];
@@ -87,7 +92,8 @@
         }
 
         // Selected view box //
-        
+
+        #if FLEX_HAS_GLASS_EFFECT
         if (@available(iOS 26, *)) {
             UIGlassEffect *descGlassEffect = [[UIGlassEffect alloc] init];
             self.descriptionGlassView = [[UIVisualEffectView alloc] initWithEffect:descGlassEffect];
@@ -96,7 +102,9 @@
             self.descriptionGlassView.hidden = YES;
             [self addSubview:self.descriptionGlassView];
             self.selectedViewDescriptionContainer = self.descriptionGlassView;
-        } else {
+        } else 
+        #endif
+        {
             self.selectedViewDescriptionContainer = [UIView new];
             self.selectedViewDescriptionContainer.backgroundColor = [FLEXColor tertiaryBackgroundColorWithAlpha:0.95];
             self.selectedViewDescriptionContainer.hidden = YES;
