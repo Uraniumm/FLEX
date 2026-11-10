@@ -20,6 +20,10 @@
 #define FLEX_HAS_GLASS_EFFECT 0
 #endif
 
+#if !FLEX_HAS_GLASS_EFFECT
+#error "Expected native UIGlassEffect support"
+#endif
+
 @interface FLEXExplorerToolbar ()
 
 @property (nonatomic, readwrite) FLEXExplorerToolbarItem *globalsItem;
