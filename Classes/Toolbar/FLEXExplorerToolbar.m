@@ -113,11 +113,11 @@
 
         self.selectedViewDescriptionSafeAreaContainer = [UIView new];
         self.selectedViewDescriptionSafeAreaContainer.backgroundColor = UIColor.clearColor;
-        if (@available(iOS 26, *)) {
-            [self.descriptionGlassView.contentView addSubview:self.selectedViewDescriptionSafeAreaContainer];
-        } else {
-            [self.selectedViewDescriptionContainer addSubview:self.selectedViewDescriptionSafeAreaContainer];
-        }
+        UIView *descriptionContentView = self.descriptionGlassView
+            ? self.descriptionGlassView.contentView
+            : self.selectedViewDescriptionContainer;
+
+        [descriptionContentView addSubview:self.selectedViewDescriptionSafeAreaContainer];
         
         self.selectedViewColorIndicator = [UIView new];
         self.selectedViewColorIndicator.backgroundColor = UIColor.redColor;
@@ -143,7 +143,7 @@
     // Drag Handle
     const CGFloat kToolbarItemHeight = [[self class] toolbarItemHeight];
     CGFloat topPadding = 0;
-    if (@available(iOS 26, *)) {
+    if (self.backgroundGlassView) {
         topPadding = [[self class] glassVerticalPadding];
     }
 
@@ -168,14 +168,14 @@
     UIView *lastToolbarItem = self.toolbarItems.lastObject.currentItem;
     CGRect lastToolbarItemFrame = lastToolbarItem.frame;
     CGFloat rightEdge = CGRectGetMaxX(safeArea);
-    if (@available(iOS 26, *)) {
+    if (self.backgroundGlassView) {
         const CGFloat kGlassInset = [[self class] glassHorizontalInset];
         rightEdge = CGRectGetWidth(self.bounds) - kGlassInset;
     }
     lastToolbarItemFrame.size.width = rightEdge - lastToolbarItemFrame.origin.x;
     lastToolbarItem.frame = lastToolbarItemFrame;
 
-    if (@available(iOS 26, *)) {
+    if (self.backgroundGlassView) {
         const CGFloat kGlassInset = [[self class] glassHorizontalInset];
         const CGFloat kGlassPadding = [[self class] glassVerticalPadding];
         self.backgroundView.frame = CGRectMake(
@@ -193,7 +193,7 @@
     const CGFloat kDescriptionContainerHeight = [[self class] descriptionContainerHeight];
     
     CGRect descriptionContainerFrame = CGRectZero;
-    if (@available(iOS 26, *)) {
+    if (self.descriptionGlassView) {
         const CGFloat kGlassInset = [[self class] glassHorizontalInset];
         const CGFloat kGlassGap = 2;
         descriptionContainerFrame.size.width = CGRectGetWidth(self.bounds) - kGlassInset * 2;
@@ -326,7 +326,7 @@
     CGFloat height = 0.0;
     height += [[self class] toolbarItemHeight];
     height += [[self class] descriptionContainerHeight];
-    if (@available(iOS 26, *)) {
+    if (self.backgroundGlassView) {
         height += [[self class] glassVerticalPadding] * 2;
     }
     return CGSizeMake(size.width, height);
